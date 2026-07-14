@@ -44,6 +44,13 @@ pipeline {
             }
         }
 
+        stage('Check Docker') {
+            steps {
+                bat 'docker version'
+                bat 'docker images'
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 bat 'docker build -t %IMAGE_NAME% .'
@@ -52,7 +59,10 @@ pipeline {
 
         stage('Remove Old Container') {
             steps {
-                bat 'docker rm -f %CONTAINER_NAME%'
+                bat '''
+                docker rm -f %CONTAINER_NAME%
+                exit /b 0
+                '''
             }
         }
 
@@ -61,19 +71,25 @@ pipeline {
                 bat 'docker run -d --name %CONTAINER_NAME% %IMAGE_NAME%'
             }
         }
+
     }
 
     post {
+
         success {
-            echo 'Build Successful!'
+            echo '========================================='
+            echo ' BUILD SUCCESSFUL '
+            echo '========================================='
         }
 
         failure {
-            echo 'Build Failed!'
+            echo '========================================='
+            echo ' BUILD FAILED '
+            echo '========================================='
         }
 
         always {
-            echo 'Pipeline Finished.'
+            echo 'Pipeline execution completed.'
         }
     }
 }

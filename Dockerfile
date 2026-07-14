@@ -1,14 +1,11 @@
-# Java 17 Base Image
+# Use Java 17 runtime
 FROM eclipse-temurin:17-jdk
 
 # Working directory
 WORKDIR /app
 
-# Copy JAR file
+# Copy the generated JAR
 COPY target/StudentManagementApp-1.0.jar app.jar
 
-# Expose port (optional)
-EXPOSE 8080
-
-# Run application
+# Run the application
 ENTRYPOINT ["java","-jar","app.jar"]
