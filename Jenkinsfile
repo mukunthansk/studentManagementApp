@@ -1,5 +1,4 @@
 pipeline {
-
     agent any
 
     tools {
@@ -10,6 +9,8 @@ pipeline {
     environment {
         IMAGE_NAME = "studentapp"
         CONTAINER_NAME = "studentapp-container"
+        HOST_PORT = "8085"
+        CONTAINER_PORT = "8085"
     }
 
     stages {
@@ -68,24 +69,37 @@ pipeline {
 
         stage('Run Docker Container') {
             steps {
-                bat 'docker run -d --name %CONTAINER_NAME% %IMAGE_NAME%'
+                bat 'docker run -d -p %HOST_PORT%:%CONTAINER_PORT% --name %CONTAINER_NAME% %IMAGE_NAME%'
             }
         }
 
+        stage('Show Running Containers') {
+            steps {
+                bat 'docker ps -a'
+            }
+        }
+
+        stage('Show Application Logs') {
+            steps {
+                bat 'docker logs %CONTAINER_NAME%'
+            }
+        }
     }
 
     post {
-
         success {
-            echo '========================================='
+            echo '========================================'
             echo ' BUILD SUCCESSFUL '
-            echo '========================================='
+            echo '========================================'
+            echo 'Docker Image : studentapp'
+            echo 'Container    : studentapp-container'
+            echo 'Host Port    : 8085'
         }
 
         failure {
-            echo '========================================='
+            echo '========================================'
             echo ' BUILD FAILED '
-            echo '========================================='
+            echo '========================================'
         }
 
         always {
